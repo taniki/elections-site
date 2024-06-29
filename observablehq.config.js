@@ -11,7 +11,8 @@ export default {
       name: "élections législatives",
       pages: [
         { name: "liste des circonscriptions", path: "/legislatives/liste-circonscriptions" },
-        { name: "élections de 2022", path: "/legislatives/2022" }
+        { name: "élections de 2022", path: "/legislatives/2022" },
+        { name: "élections de 2024", path: "/legislatives/2024" }
       ]
     },
     {
