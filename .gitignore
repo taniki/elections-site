@@ -2,4 +2,6 @@
 /dist/
 node_modules/
 yarn-error.log
+
 .netlify
+.observablehq
