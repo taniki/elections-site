@@ -1,6 +1,21 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as aq from "npm:arquero";
 
+export function fetch_votes(annee, tour){
+	return (
+		aq
+		.loadCSV(
+			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}_t${tour}_resultats.csv`,
+			{
+				autoType:false,
+				parse:{
+					NbVoix: parseInt
+				}
+			}
+		)
+	)
+}
+
 export function votes_to_resultats(votes){
 	return (
 		votes
