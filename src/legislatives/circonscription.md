@@ -5,6 +5,8 @@ title: circonscription
 # détail pour la circonscription
 
 ```js
+import * as lg from '../components/legislatives.js'
+
 const code_circo = location.hash.substring(1)
 const code_departement = code_circo.slice(0,2)
 const num_circo = code_circo.slice(-2).padStart(3, "0")
@@ -21,6 +23,19 @@ const candidats = candidats_france.filter(circo => circo.CodCirc2 == code_circo)
 
 ```js
 Inputs.table(candidats)
+```
+
+### premier tour
+
+```js
+const resultats_2024_t1 = (
+	(await lg.fetch_votes(2024, 1))
+	.filter(aq.escape(d=> d.CodCirc2 == code_circo))
+)
+```
+
+```js
+Inputs.table(resultats_2024_t1)
 ```
 
 ## 2022
