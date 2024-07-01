@@ -73,7 +73,7 @@ const colors = {
 	'UG'  : '#e4032e',
 	'ENS' : '#fed700',
 	'LR'  : '#0066cc',
-	'RN'  : '##0d378a',
+	'RN'  : '#0d378a',
 }
 
 const lg2024_t1_resultats = (
