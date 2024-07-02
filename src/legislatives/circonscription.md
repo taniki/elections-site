@@ -32,10 +32,30 @@ const resultats_2024_t1 = (
 	(await lg.fetch_votes(2024, 1))
 	.filter(aq.escape(d=> d.CodCirc2 == code_circo))
 )
+
+const CodReg = resultats_2024_t1.get('CodReg')
+const CodDpt = resultats_2024_t1.get('CodDept')
+const CodCirc = resultats_2024_t1.get('CodCirc')
 ```
 
 ```js
+const t1_resultats_url = `https://www.resultats-elections.interieur.gouv.fr/legislatives2024/ensemble_geographique/${CodReg}/${CodDpt}/${CodCirc}/index.html`
+```
+
+${html`<a href="${t1_resultats_url}">Résultats officiels</a>`}
+
+
+```js
 Inputs.table(resultats_2024_t1)
+```
+
+```js
+Plot.plot({
+	marginLeft: 100,
+	marks: [
+		Plot.rectX(resultats_2024_t1, { y: "NomPsn", x: "NbVoix" })
+	]
+})
 ```
 
 ## 2022
@@ -44,19 +64,27 @@ Inputs.table(resultats_2024_t1)
 
 ```js
 const resultats_2022_t1 = (
-	await d3.csv(`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2022/t1/${code_departement}${num_circo}.csv`)
+	await d3.csv(
+		`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2022/t1/${code_departement}${num_circo}.csv`,
+		{
+			autoType:false,
+			parse:{
+				NbVoix: parseInt
+			}
+		}
+	)
 )
 ```
 
 ```js
-Inputs.table(resultats_2022_t1)
+Inputs.table(resultats_2022_t1, { sort: "NbVoix" })
 ```
 
 ```js
 Plot.plot({
 	marginLeft: 100,
 	marks: [
-		Plot.rectX(resultats_2022_t1, {y: "NomPsn", x: "NbVoix"})
+		Plot.rectX(resultats_2022_t1, { y: "NomPsn", x: "NbVoix" })
 	]
 })
 ```
@@ -77,7 +105,7 @@ Inputs.table(resultats_2022_t2)
 Plot.plot({
 	marginLeft: 100,
 	marks: [
-		Plot.rectX(resultats_2022_t2, {y: "NomPsn", x: "NbVoix"})
+		Plot.rectX(resultats_2022_t2, {y: "NomPsn", x: "NbVoix", sort: "-NbVoix"})
 	]
 })
 ```

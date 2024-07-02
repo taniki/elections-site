@@ -8,7 +8,8 @@ toc: false
 
 ```js
 const circo_flat = await d3.csv('https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2024_circonscriptions.csv')
-const dept_circo = await d3.group(circo_flat, d => d.CodDpt)
+
+const dept_circo = await d3.group(circo_flat, d => d.CodCirc2.slice(0,2))
 const inscrits_2022 = await d3.csv('https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2022_inscrits.csv')
 ```
 
