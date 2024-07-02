@@ -118,10 +118,10 @@ const departements = (await d3.csv('https://raw.githubusercontent.com/taniki/leg
 <table>
 
 ```js echo
-display(
+(
 	d3
 	.groups(lg2024_t1_resultats, d => d[0].slice(0,2))
-	.forEach(d=> display(html`<tr><td style="text-align: right">${departements.find((dept) => dept.CodDpt == d[0]).LibDpt} (${d[0]})</td><td>${d[1].map(c => html`<a href="/legislatives/circonscription#${c[0]}">${circogramme(c[1], 16, 16).node()}</a> `)}</td></tr>`))
+	.forEach(d => display(html`<tr><td style="text-align: right">${departements.find((dept) => dept.CodDpt == d[0]).LibDpt} (${d[0]})</td><td>${d[1].map(c => html`<a href="/legislatives/circonscription#${c[0]}">${circogramme(c[1], 16, 16).node()}</a> `)}</td></tr>`))
 )
 ```
 
