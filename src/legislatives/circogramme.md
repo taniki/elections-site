@@ -78,12 +78,7 @@ display(circogramme(sample,20, 20).node())
 ### taille par défaut
 
 ```js echo
-const colors = {
-	'UG'  : '#e4032e',
-	'ENS' : '#fed700',
-	'LR'  : '#0066cc',
-	'RN'  : '#0d378a',
-}
+const colors = lg.nuances_colors
 
 const lg2024_t1_resultats = (
 	d3

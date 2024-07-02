@@ -1,6 +1,13 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as aq from "npm:arquero";
 
+export const nuances_colors = {
+	UG  : '#e4032e',
+	ENS : '#fed700',
+	LR  : '#0066cc',
+	RN  : '#5e3b17',
+}
+
 export function fetch_votes(annee, tour){
 	return (
 		aq
