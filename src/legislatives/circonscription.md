@@ -50,12 +50,31 @@ Inputs.table(resultats_2024_t1)
 ```
 
 ```js
-Plot.plot({
-	marginLeft: 100,
+const voix_plot = (resultats) => Plot.plot({
+	marginLeft: 150,
+	x: {
+		label: 'nombre de voix',
+		grid: true,
+		tickFormat: x => x.toLocaleString('fr')
+	},
+	y: {
+		label: null,
+	},
 	marks: [
-		Plot.rectX(resultats_2024_t1, { y: "NomPsn", x: "NbVoix" })
+		Plot.rectX(
+			resultats,
+			{
+				y: "NomPsn",
+				x: "NbVoix",
+				sort: {
+					y: "-x"
+				}
+			}
+		),
 	]
 })
+
+display(voix_plot(resultats_2024_t1))
 ```
 
 ## 2022
@@ -81,12 +100,7 @@ Inputs.table(resultats_2022_t1, { sort: "NbVoix" })
 ```
 
 ```js
-Plot.plot({
-	marginLeft: 100,
-	marks: [
-		Plot.rectX(resultats_2022_t1, { y: "NomPsn", x: "NbVoix" })
-	]
-})
+voix_plot(resultats_2022_t1)
 ```
 
 ### second tour
@@ -102,10 +116,5 @@ Inputs.table(resultats_2022_t2)
 ```
 
 ```js
-Plot.plot({
-	marginLeft: 100,
-	marks: [
-		Plot.rectX(resultats_2022_t2, {y: "NomPsn", x: "NbVoix", sort: "-NbVoix"})
-	]
-})
+voix_plot(resultats_2022_t2)
 ```
