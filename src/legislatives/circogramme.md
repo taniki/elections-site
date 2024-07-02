@@ -114,4 +114,15 @@ lg2024_t1_resultats.map(x=> display(html`${circogramme(x[1]).node()} `))
 lg2024_t1_resultats.map(x=> display(html`${circogramme(x[1], 16, 16).node()} `))
 ```
 
+## tableau par département
+
+```js
+(
+	d3
+	.groups(lg2024_t1_resultats, d => d[0].slice(0,2))
+	.forEach(d=> display(html`<tr><td>${d[0]}</td><td>${d[1].map(c => html`${circogramme(c[1], 16, 16).node()} `)}</td></tr>`))
+)
+```
+
+
 ## cartocircogramme
