@@ -11,6 +11,8 @@ const circo_flat = await d3.csv('https://raw.githubusercontent.com/taniki/legisl
 
 const dept_circo = await d3.group(circo_flat, d => d.CodCirc2.slice(0,2))
 const inscrits_2022 = await d3.csv('https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2022_inscrits.csv')
+
+const departements = await d3.csv('https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2024_departements.csv')
 ```
 
 ```js
@@ -49,7 +51,7 @@ const inscrits_2022 = await d3.csv('https://raw.githubusercontent.com/taniki/leg
 
 ```js
 const rows = Array.from(dept_circo.keys()).sort().map(dept => {
-  return html`<tr><td>${dept}<td><td>${ dept_circo.get(dept).map(c => {
+  return html`<tr><td style="text-align:right;">${departements.find(d => d.CodDpt == dept).LibDpt} <code>${dept}</code><td><td>${ dept_circo.get(dept).map(c => {
     return html`<a href="/legislatives/circonscription#${dept}0${c.CodCirElec.slice(-2)}">${c.CodCirElec.slice(-2)}</a> `
   })}</td</tr>`
 })
