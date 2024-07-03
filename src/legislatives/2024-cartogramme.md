@@ -131,8 +131,8 @@ const plot_departements = () => {
 	departements
 		.append('rect')
 		.attr("class", "placeholder")
-		.attr('width', d => d.w * square_size)
-		.attr('height', d => d.w * square_size)
+		.attr('width', d => d.w * square_size - 1)
+		.attr('height', d => d.w * square_size - 1)
 		.attr('x', d => d.x * square_size)
 		.attr('y', d => d.y * square_size)
 		.attr('stroke', 'black')
@@ -214,7 +214,7 @@ const circonscriptions = (
 			const y = (departement.y + Math.floor(j/departement.w)) * square_size
 			
 			return (
-				circogramme(circo[1], square_size, square_size)
+				circogramme(circo[1], square_size-1, square_size-1)
 				.attr('transform', `translate(${x} ${y})`)
 				.node()
 			)
