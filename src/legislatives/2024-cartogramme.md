@@ -5,7 +5,8 @@ title: cartogramme des résultats du premier des élections législatives 2024
 # cartogramme des résultats du premier des élections législatives 2024
 
 Tentative d'utilisation des [circogrammes](/legislatives/circogramme) dans un contexte cartographique.
-L'intention est de s'éloigner des effets d'optique provoqués par les représentations des territoires sous forme de surfaces.
+L'intention est de s'éloigner des effets d'optique provoqués par la représentation des territoires sous forme de surfaces.
+Un effet secondaire est de redonner de la visibilité à la diversité des seconds et aux troisièmes en évitant ainsi le côté *winner takes all* même si c’est le résultat final.
 
 ```js
 import * as lg from '../components/legislatives.js'
