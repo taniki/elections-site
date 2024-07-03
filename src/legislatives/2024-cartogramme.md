@@ -4,6 +4,9 @@ title: cartogramme des résultats du premier des élections législatives 2024
 
 # cartogramme des résultats du premier des élections législatives 2024
 
+Tentative d'utilisation des [circogrammes](/legislatives/circogramme) dans un contexte cartographique.
+L'intention est de s'éloigner des effets d'optique provoqués par les représentations des territoires sous forme de surfaces.
+
 ```js
 import * as lg from '../components/legislatives.js'
 import { circogramme } from '../components/circogramme.js'
@@ -51,6 +54,7 @@ const width = 1600
 const height= 1600
 
 const square_size = 23
+const gutter = 2
 
 const doc = (new DOMParser).parseFromString((await FileAttachment('../assets/carte-uniquement.svg').text()), "image/svg+xml")
 const fond = d3.select(doc.documentElement).remove()
@@ -63,57 +67,6 @@ const main = (
 	.attr("viewBox", [0, 0, width, height])
 	.attr("style", "max-width: 100%; height: auto;")
 )
-
-function gridData() {
-	var data = new Array();
-	var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
-	var ypos = 1;
-	var width = square_size;
-	var height = square_size;
-	
-	// iterate for rows	
-	for (var row = 0; row < 80; row++) {
-		data.push( new Array() );
-		
-		// iterate for cells/columns inside rows
-		for (var column = 0; column < 80; column++) {
-			data[row].push({
-				x: xpos,
-				y: ypos,
-				width: width,
-				height: height
-			})
-			// increment the x position. I.e. move it over by 50 (width variable)
-			xpos += width;
-		}
-		// reset the x position after a row is complete
-		xpos = 1;
-		// increment the y position for the next row. Move it down 50 (height variable)
-		ypos += height;	
-	}
-	return data;
-}
-
-// var grid = main
-// 	.append("g")
-// 	.attr("width","510px")
-// 	.attr("height","510px");
-// 
-// var row = grid.selectAll(".row")
-// .data(gridData)
-// .enter().append("g")
-// .attr("class", "row");
-// 
-// var column = row.selectAll(".square")
-// 	.data(function(d) { return d; })
-// 	.enter().append("rect")
-// 	.attr("class","square")
-// 	.attr("x", function(d) { return d.x; })
-// 	.attr("y", function(d) { return d.y; })
-// 	.attr("width", function(d) { return d.width; })
-// 	.attr("height", function(d) { return d.height; })
-// 	.style("fill", "#fff")
-// 	.style("stroke", "#aaa");
 
 const plot_fond = () => main.node().appendChild(fond.node())
 
@@ -131,8 +84,8 @@ const plot_departements = () => {
 	departements
 		.append('rect')
 		.attr("class", "placeholder")
-		.attr('width', d => d.w * square_size - 1)
-		.attr('height', d => d.w * square_size - 1)
+		.attr('width', d => d.w * square_size - gutter)
+		.attr('height', d => d.w * square_size - gutter)
 		.attr('x', d => d.x * square_size)
 		.attr('y', d => d.y * square_size)
 		.attr('stroke', 'black')
@@ -214,7 +167,7 @@ const circonscriptions = (
 			const y = (departement.y + Math.floor(j/departement.w)) * square_size
 			
 			return (
-				circogramme(circo[1], square_size-1, square_size-1)
+				circogramme(circo[1], square_size-gutter, square_size-gutter)
 				.attr('transform', `translate(${x} ${y})`)
 				.node()
 			)
