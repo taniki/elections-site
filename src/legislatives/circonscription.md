@@ -50,31 +50,63 @@ Inputs.table(resultats_2024_t1)
 ```
 
 ```js
-const voix_plot = (resultats) => Plot.plot({
-	marginLeft: 150,
-	x: {
-		label: 'nombre de voix',
-		grid: true,
-		tickFormat: x => x.toLocaleString('fr')
-	},
-	y: {
-		label: null,
-	},
-	marks: [
-		Plot.rectX(
-			resultats,
-			{
-				y: "NomPsn",
-				x: "NbVoix",
-				sort: {
-					y: "-x"
+const voix_plot = (resultats) => {
+	const threshold_qualification = (
+		.125
+		* d3.max(resultats.map(d => d.NbVoix))
+		/ (d3.max(resultats.map(d => d.RapportInscrits)) / 100)
+	)
+	
+	const threshold_elu = (
+		.5
+		* d3.max(resultats.map(d => d.NbVoix))
+		/ (d3.max(resultats.map(d => d.RapportExprimes)) / 100)
+	)
+	
+	return Plot.plot({
+		marginLeft: 150,
+		marginRight: 50,
+		x: {
+			label: 'nombre de voix',
+			grid: true,
+			tickFormat: x => x.toLocaleString('fr')
+		},
+		y: {
+			label: null,
+		},
+		marks: [
+			Plot.rectX(
+				resultats,
+				{
+					y: "NomPsn",
+					x: "NbVoix",
+					sort: {
+						y: "-x"
+					}
 				}
-			}
-		),
-	]
-})
+			),
+			Plot.ruleX(
+				[
+					threshold_qualification,
+					threshold_elu
+				], {
+				strokeDasharray: [2,1]
+			}),
+			Plot.text([
+				['12,5 % des inscrits', threshold_qualification],
+				['50,0 % des votants', threshold_elu],
+			], {
+				text: d => d[0],
+				x: d => d[1],
+				y: d=> d3.greatest(resultats, d=>d.NbVoix).NomPsn,
+				lineAnchor: 'bottom',
+				dy: -16
+			})
+		]
+	})
+}
 
-display(voix_plot(resultats_2024_t1))
+display(voix_plot((resultats_2024_t1).objects()))
 ```
 
 ## 2022
@@ -83,24 +115,29 @@ display(voix_plot(resultats_2024_t1))
 
 ```js
 const resultats_2022_t1 = (
-	await d3.csv(
+	(await aq.loadCSV(
 		`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg2022/t1/${code_departement}${num_circo}.csv`,
 		{
 			autoType:false,
 			parse:{
-				NbVoix: parseInt
+				NbVoix: parseInt,
+				RapportExprime: x => parseFloat(x.replace(',', '.')),
+				RapportInscrit: x => parseFloat(x.replace(',', '.'))
 			}
 		}
-	)
+	)).rename({
+		RapportExprime: 'RapportExprimes',
+		RapportInscrit: 'RapportInscrits',
+	})
 )
 ```
 
 ```js
-Inputs.table(resultats_2022_t1, { sort: "NbVoix" })
+Inputs.table(resultats_2022_t1.objects())
 ```
 
 ```js
-voix_plot(resultats_2022_t1)
+voix_plot(resultats_2022_t1.objects())
 ```
 
 ### second tour
