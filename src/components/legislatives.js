@@ -5,6 +5,7 @@ export const nuances_colors = {
 	UG  : '#e4032e',
 	ENS : '#fed700',
 	LR  : '#0066cc',
+	UXD : '#5e3b17',
 	RN  : '#5e3b17',
 }
 
@@ -16,7 +17,9 @@ export function fetch_votes(annee, tour){
 			{
 				autoType:false,
 				parse:{
-					NbVoix: parseInt
+					NbVoix: parseInt,
+					RapportExprimes: x => parseFloat(x.replace(',', '.')),
+					RapportInscrits: x => parseFloat(x.replace(',', '.'))
 				}
 			}
 		)
