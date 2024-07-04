@@ -36,7 +36,7 @@ const opts = view(
 
 ```js
 const to_data = (candidats) => {
-	return candidats.map(d => ({
+	return d3.sort(candidats,d=>d.NbVoix).reverse().map(d => ({
 		party: d.CodNuaCand,
 		voices: d.NbVoix,
 		color: lg.nuances_colors[d.CodNuaCand]
@@ -83,9 +83,9 @@ const qualif_t1 = (
 )
 
 function cg_list(l, pos=0, disp=10){
-	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]) : [to_data(d[1])[pos]]
+	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]).slice(0,disp) : [to_data(d[1])[pos]]
 
-	return d3.sort(l, d=> d[0]).map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d).slice(0,disp), 24, 24).node()}</a> `)
+	return d3.sort(l, d=> d[0]).map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d), 24, 24).node()}</a> `)
 }
 ```
 
@@ -241,7 +241,7 @@ const pct_report = view(Inputs.range([0,1], { value: 0.5, label: 'pourcentage de
 const sim = (t1, pct) => (
 	t1
 	.map(d => {
-		const sim = structuredClone(d)
+		let sim = structuredClone(d)
 		const candidats = (
 			d3
 			.sort(sim[1], d=> d.NbVoix)
@@ -251,6 +251,9 @@ const sim = (t1, pct) => (
 		
 		candidats[1].NbVoix = candidats[1].NbVoix + candidats[2].NbVoix * pct
 		candidats[2].NbVoix = candidats[2].NbVoix - candidats[2].NbVoix * pct
+		
+		//sim = d3.sort(sim, d=>d.NbVoix).reverse()
+		
 		return sim
 	})
 )
@@ -260,10 +263,13 @@ const t2_sim = sim(t1_rnpos1, pct_report)
 
 ```js
 familles.forEach(f => {
-	const t1 = t2_sim.filter(d => {
-		const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
-		return candidats[0].CodNuaCand == f
-	})
+	const t1 = (
+		t2_sim
+		.filter(d => {
+			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
 	
 	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,0,3)}</td></tr>`
 	
