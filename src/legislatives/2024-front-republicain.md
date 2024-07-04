@@ -234,7 +234,7 @@ familles.filter(f => (f != "RN" && f != "UXD")).forEach(f => {
 Une simulation relativement claquée de ce qui se passerait pour les circonscriptions où le RN est en tête et qu'un certain pourcentage (`pct_report`) des votes de la personne en troisième position se reportait sur la seconde.
 
 ```js
-const pct_report = view(Inputs.range([0,1], { value: 0.5 }))
+const pct_report = view(Inputs.range([0,1], { value: 0.5, label: 'pourcentage de report de la troisième vers la seconde'}))
 ```
 
 ```js
