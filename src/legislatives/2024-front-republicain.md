@@ -55,7 +55,7 @@ familles.forEach(f => {
 })
 ```
 
-## les circonscriptions où le front républicain est en tête dans la circonscription
+## les circonscriptions où le front républicain est en tête
 
 <div class="grid grid-cols-2">
 <div>
