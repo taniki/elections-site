@@ -6,9 +6,9 @@ export function circogramme(data, w=50, h=50){
 	const default_size = 50
 	const background = "#fff"
 	
+	const data_sorted = d3.sort(data, d => d.voices).reverse()
 	const total = d3.sum(data.map(d => d.voices))
-	
-	const pos_x = d3.cumsum([0, ...data.map(d=> d.voices*default_size/total)])
+	const pos_x = d3.cumsum([0, ...data_sorted.map(d=> d.voices*default_size/total)])
 	
 	const svg = d3.create("svg")
 		.attr("width", h)
@@ -17,7 +17,7 @@ export function circogramme(data, w=50, h=50){
 		
 	const stripes = svg
 		.selectAll('rect')
-		.data(data)
+		.data(data_sorted)
 		.enter()
 			.append("rect")
 			.attr('width', (d,i) => (d.voices / total) * default_size)
