@@ -9,7 +9,7 @@ import * as lg from '../components/legislatives.js'
 const resultats_t1 = (await lg.fetch_votes(2024, 1))
 import { circogramme } from '../components/circogramme.js'
 
-const familles = [ 'UG', 'ENS', 'LR', 'RN' ]
+const familles = [ 'UG', 'ENS', 'LR', 'RN', 'UXD' ]
 const ED = ['RN', 'UXD']
 
 const elus_t1 = (
@@ -98,6 +98,12 @@ familles.filter(f => !ED.includes(f)).forEach(f => {
 	display(h)
 })
 ```
+
+</div>
+</div>
+
+## circonscriptions où le RN est en tête
+
 ```js
 const t1_rnpos1 = (
 	d3
@@ -112,8 +118,9 @@ const t1_rnpos1 = (
 )
 ```
 
-</div>
-</div>
+```js
+t1_rnpos1
+```
 
 ## circonscriptions perdues d'avance
 
@@ -265,6 +272,40 @@ const t2_sim = sim(t1_rnpos1, pct_report)
 familles.forEach(f => {
 	const t1 = (
 		t2_sim
+		.filter(d => {
+			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
+	
+	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,0,3)}</td></tr>`
+	
+	display(h)
+})
+```
+
+### composition finale
+
+```js
+const composition_sim = (
+	d3
+	.merge([
+		// resultats_t1
+		// 	.filter(d => d.Elu == "OUI")
+		// 	.objects(),
+		qualif_t1
+			.filter(d => !ED.includes(d3.greatest(d[1], c => c.NbVoix).CodNuaCand)),
+		t2_sim
+	])
+)
+
+display(composition_sim)
+```
+
+```js
+familles.forEach(f => {
+	const t1 = (
+		composition_sim
 		.filter(d => {
 			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
 			return candidats[0].CodNuaCand == f
