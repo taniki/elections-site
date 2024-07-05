@@ -336,7 +336,6 @@ const resultats_t1 = (
 )
 ```
 
-
 ## fonctions
 
 WIP
@@ -355,6 +354,10 @@ const to_data = (candidats) => {
 function cg_list(l, pos=0, disp=undefined){
 	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]).slice(0,(disp)?disp:l.length) : [to_data(d[1])[pos]]
 
-	return d3.sort(l, d=> d[0]).map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d), 24, 24).node()}</a> `)
+	return (
+		d3
+		.sort(l, d=> d3.max(d[1], d=>d.NbVoix)).reverse()
+		.map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d), 24, 24).node()}</a> `)
+	)
 }
 ```
