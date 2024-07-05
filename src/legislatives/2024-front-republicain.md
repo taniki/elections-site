@@ -29,7 +29,7 @@ const t1_direct = (
 	.filter(d => d[1].map(c => c.Elu).includes("OUI"))
 )
 
-display(t1_direct)
+// display(t1_direct)
 
 familles.forEach(f => {
 	const t1 = (
@@ -76,7 +76,7 @@ const t1_rnpos1_not =  (
 	.filter(d => !ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
 )
 
-display(t1_rnpos1_not)
+//display(t1_rnpos1_not)
 
 familles.forEach(f => {
 	const t1 = (
@@ -105,7 +105,7 @@ const t1_rnpos1 = (
 	.filter(d => ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
 )
 
-display(t1_rnpos1)
+// display(t1_rnpos1)
 
 familles.forEach(f => {
 	const t1 = (
@@ -198,7 +198,16 @@ familles.filter(f => !ED.includes(f)).forEach(f => {
 Une simulation relativement claquée de ce qui se passerait pour les circonscriptions où le RN est en tête et qu'un certain pourcentage (`pct_report`) des votes de la personne en troisième position se reportait sur la seconde.
 
 ```js
-const pct_report = view(Inputs.range([0,1], { value: 0.5, label: 'pourcentage de report de la troisième vers la seconde'}))
+const pct_report = view(
+	Inputs
+	.range(
+		[0,1],
+		{
+			value: 0.5, label: 'pourcentage de report de la troisième vers la seconde',
+			step: 0.01
+		}
+	)
+)
 ```
 
 ```js
@@ -254,8 +263,40 @@ const composition_sim = (
 	])
 )
 
-display(composition_sim)
+// display(composition_sim)
 ```
+
+```js
+let message = ''
+
+const winner = (c) => d3.greatest(c, x => x.NbVoix)
+
+const sim_winners = (
+	d3
+	.rollups(
+		composition_sim
+		.map(d=>winner(d[1]).CodNuaCand),
+		d => d.length,
+		d => d
+	)
+)
+
+if ( sim_winners.find(d=>d[0]=='RN')[1] >=  d3.max(sim_winners.filter(d=>d[0]!='RN'), d=>d[1])){
+	message = 'Le Rassemblement National a la majorité'
+} else {
+	message = 'Le Rassemblement National n\'a pas la majorité'
+}
+
+// display(sim_winners)
+// display(message)
+```
+
+<div class="card">
+
+${message}
+
+</div>
+
 
 ```js
 familles.forEach(f => {
