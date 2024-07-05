@@ -6,18 +6,7 @@ title: Le front républicain
 
 ```js
 import * as lg from '../components/legislatives.js'
-const resultats_t1 = (await lg.fetch_votes(2024, 1))
 import { circogramme } from '../components/circogramme.js'
-
-const familles = [ 'UG', 'ENS', 'LR', 'RN', 'UXD' ]
-const ED = ['RN', 'UXD']
-
-const elus_t1 = (
-	resultats_t1
-	.filter(d => d.Elu == "OUI")
-	.groupby('CodNuaCand')
-	.count()
-)
 ```
 
 ```js
@@ -35,23 +24,26 @@ const opts = view(
 ## circonscriptions où le/la candidate a été élu·es dès le premier tour
 
 ```js
-const to_data = (candidats) => {
-	return d3.sort(candidats,d=>d.NbVoix).reverse().map(d => ({
-		party: d.CodNuaCand,
-		voices: d.NbVoix,
-		color: lg.nuances_colors[d.CodNuaCand]
-	}))
-}
+const t1_direct = (
+	resultats_t1
+	.filter(d => d[1].map(c => c.Elu).includes("OUI"))
+)
+
+display(t1_direct)
 
 familles.forEach(f => {
-	const t1 = resultats_t1
-		.filter(d => d.Elu == "OUI")
-		.filter(aq.escape(d => d.CodNuaCand == f))
-		.objects()
-
-	const h = html`<tr><td>${f} (${t1.length})</td><td>${to_data(t1).map(d=> html`${circogramme([d], 24, 24).node()} `)}</td></tr>`
+	const t1 = (
+		t1_direct
+		.filter(d => {
+			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
 	
-	display(h)
+	if (t1.length > 0){
+		const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
+		display(h)
+	}
 })
 ```
 
@@ -70,68 +62,75 @@ C'est important mais on peut mettre ce détail de côté pour l'instant.
 
 ```js
 const qualif_t1 = (
-	d3
-	.rollups(
-		resultats_t1
-		.orderby(aq.desc('NbVoix'))
-		//.filter(d=>d.Elu == "QUALIF T2")
-		.objects(),
-		d => d,
-		d => d.CodCirc2
-	)
+	resultats_t1
 	.filter(d=>!d[1].map(c=>c.Elu).includes('OUI'))
 )
 
-function cg_list(l, pos=0, disp=10){
-	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]).slice(0,disp) : [to_data(d[1])[pos]]
-
-	return d3.sort(l, d=> d[0]).map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d), 24, 24).node()}</a> `)
-}
+//display(qualif_t1.length + t1_direct.length)
+//display(qualif_t1)
 ```
 
 ```js
-familles.filter(f => !ED.includes(f)).forEach(f => {
-	const t1 = qualif_t1.filter(d => d3.greatest(d[1], d=> d.NbVoix).CodNuaCand == f)
+const t1_rnpos1_not =  (
+	qualif_t1
+	.filter(d => !ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
+)
+
+display(t1_rnpos1_not)
+
+familles.forEach(f => {
+	const t1 = (
+		t1_rnpos1_not
+		.filter(d => {
+			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
 	
-	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
-	
-	display(h)
+	if (t1.length > 0){
+		const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
+		display(h)
+	}
 })
 ```
 
 </div>
 </div>
 
-## circonscriptions où le RN est en tête
+## circonscriptions où le RN et ses alliés est en tête
 
 ```js
 const t1_rnpos1 = (
-	d3
-	.rollups(
-		resultats_t1
-		//.filter(d=>d.Elu == "QUALIF T2")
-		.objects(),
-		d => d3.sort(d, x=>x.NbVoix).reverse(),
-		d => d.CodCirc2
-	)
+	qualif_t1
 	.filter(d => ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
 )
-```
 
-```js
-t1_rnpos1
-```
+display(t1_rnpos1)
 
-## circonscriptions perdues d'avance
+familles.forEach(f => {
+	const t1 = (
+		t1_rnpos1
+		.filter(d => {
+			const candidats = d[1] //d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
+	
+	if (t1.length > 0){
+		const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
+		display(h)
+	}})
+```
 
 <div class="grid grid-cols-2">
 <div>
 
+
+### circonscriptions perdues d'avance
+
+
 On considère que les circonscriptions fonts plus que le second et le troisième sont perdues d'avance.
 Il y en a ${t1_rnpos1_sup.length} en tout.
-
-</div>
-<div>
 
 ```js
 const t1_rnpos1_sup = (
@@ -155,24 +154,18 @@ familles.forEach(f => {
 	display(h)
 })
 ```
-
-
 </div>
-</div>
-
-## circonscriptions où le RN peut être vaincu
-
-### RN < second et troisième
-
-<div class="grid grid-cols-2">
 <div>
+
+
+### circonscriptions où le RN peut être vaincu
+
+#### RN < second et troisième
 
 Imaginons un scénario où tous les partis politiques ainsi que la population joue le jeu d'un front républicain fort.
 Toutes les personnes qui auraient voter pour le candidat en troisième position vote pour le second quelque soit le camp.
 Le but est simple minimiser le nombre de sièges du RN et de ses alliés à l'Assemblée nationale.
 
-</div>
-<div>
 
 ```js
 const t1_rnpos1_inf = (
@@ -185,44 +178,8 @@ const t1_rnpos1_inf = (
 ```
 
 ```js
-familles.filter(f => (f != "RN" && f != "UXD")).forEach(f => {
+familles.filter(f => !ED.includes(f)).forEach(f => {
 	const t1 = t1_rnpos1_inf.filter(d => {
-		const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
-		return candidats[1].CodNuaCand == f
-	})
-	
-	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,1)}</td></tr>`
-	
-	display(h)
-})
-```
-
-</div>
-</div>
-
-### RN < second + (troisième / 2)
-
-<div class="grid grid-cols-2">
-<div>
-
-
-
-</div>
-<div>
-
-```js
-const t1_rnpos1_inf_bis = (
-	t1_rnpos1
-	.filter(d=>{
-		const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
-		return (candidats[0].NbVoix < candidats[1].NbVoix + ((candidats.length > 2) ? candidats[2].NbVoix : 0) * .5)
-	})
-)
-```
-
-```js
-familles.filter(f => (f != "RN" && f != "UXD")).forEach(f => {
-	const t1 = t1_rnpos1_inf_bis.filter(d => {
 		const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
 		return candidats[1].CodNuaCand == f
 	})
@@ -290,9 +247,7 @@ familles.forEach(f => {
 const composition_sim = (
 	d3
 	.merge([
-		// resultats_t1
-		// 	.filter(d => d.Elu == "OUI")
-		// 	.objects(),
+		t1_direct,
 		qualif_t1
 			.filter(d => !ED.includes(d3.greatest(d[1], c => c.NbVoix).CodNuaCand)),
 		t2_sim
@@ -316,4 +271,47 @@ familles.forEach(f => {
 	
 	display(h)
 })
+```
+
+## données
+
+WIP
+
+```js
+const familles = [ 'UG', 'ENS', 'LR', 'RN', 'UXD' ]
+const ED = ['RN', 'UXD']
+```
+
+```js
+const resultats_t1 = (
+	d3
+	.rollups(
+		(await lg.fetch_votes(2024, 1)).objects(),
+		d => d3.sort(d, d=>d.NbVoix).reverse(),
+		d => d.CodCirc2
+	)
+)
+```
+
+
+## fonctions
+
+WIP
+
+```js
+const to_data = (candidats) => {
+	return d3.sort(candidats,d=>d.NbVoix).reverse().map(d => ({
+		party: d.CodNuaCand,
+		voices: d.NbVoix,
+		color: lg.nuances_colors[d.CodNuaCand]
+	}))
+}
+```
+
+```js
+function cg_list(l, pos=0, disp=undefined){
+	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]).slice(0,(disp)?disp:l.length) : [to_data(d[1])[pos]]
+
+	return d3.sort(l, d=> d[0]).map(d=> html`<a href="/legislatives/circonscription#${d[0]}">${circogramme(data(d), 24, 24).node()}</a> `)
+}
 ```
