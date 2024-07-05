@@ -349,7 +349,7 @@ const sims = (
 		d3
 		.merge(
 			d3
-			.range(0, 1, 0.01)
+			.range(0, 1.01, 0.01)
 			.map(d=> sim2(d))
 		),
 		d=> d.nuance
@@ -359,6 +359,7 @@ const sims = (
 
 ```js
 Plot.plot({
+	marginRight: 40,
 	x: {
 		label: 'pourcentage de reports de voix',
 		percent: true,
@@ -381,6 +382,20 @@ Plot.plot({
 						x: 'pct',
 						y: 'sieges',
 						stroke: 'nuance'
+					}
+				)
+			})
+		),
+		...(
+			familles.map(f => {
+				return Plot.text(
+					d3.filter(sims.get(f), d=> d.pct == 1),
+					{
+						x	 : 'pct',
+						y	 : 'sieges',
+						text : 'nuance',
+						textAnchor: 'start',
+						dx   : 4
 					}
 				)
 			})
