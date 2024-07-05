@@ -31,6 +31,30 @@ Cette visualisation utilise pour l'instant les résultats du premier tour des l�
 </div>
 
 
+```js
+Plot.legend({
+	type: 'categorical',
+	color:{
+		domain: [
+			"circonscription ne changeant pas de nuance",
+			"circonscription passant au NFP",
+			"circonscription passant à Ensemble",
+			"circonscription passant à Les Républicains",
+			"circonscription passant à LR-RN",
+			"circonscription passant au Rassemblement nationale",
+		],
+		range: [
+			'#bbb',
+			lg.nuances_colors['NFP'],
+			lg.nuances_colors['ENS'],
+			lg.nuances_colors['LR'],
+			lg.nuances_colors['UXD'],
+			lg.nuances_colors['RN'],
+		]
+	}
+})
+```
+
 ```js echo
 Plot.plot({
   aspectRatio: 1,
@@ -43,6 +67,9 @@ Plot.plot({
   },
   fy:{
 	  domain: ['NFP', 'ENS', 'LR', 'RN']
+  },
+  color: {
+	  legend:true
   },
   marks: [
 	Plot.dot(
