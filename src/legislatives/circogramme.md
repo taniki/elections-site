@@ -129,3 +129,5 @@ const departements = (await d3.csv('https://raw.githubusercontent.com/taniki/leg
 
 
 ## cartocircogramme
+
+- [tentative de cartogramme pour les élections législatives de 2024](/legislatives/2024-cartogramme)
