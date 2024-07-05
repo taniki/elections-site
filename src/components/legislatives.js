@@ -3,6 +3,7 @@ import * as aq from "npm:arquero";
 
 export const nuances_colors = {
 	UG  : '#e4032e',
+	NFP : '#e4032e',
 	ENS : '#fed700',
 	LR  : '#0066cc',
 	UXD : '#945e32',
@@ -18,8 +19,10 @@ export function fetch_votes(annee, tour){
 				autoType:false,
 				parse:{
 					NbVoix: parseInt,
-					RapportExprimes: x => parseFloat(x.replace(',', '.')),
-					RapportInscrits: x => parseFloat(x.replace(',', '.'))
+					RapportExprimes: x => parseFloat(x.trim().replace(',', '.')),
+					RapportInscrits: x => parseFloat(x.trim().replace(',', '.')),
+					RapportExprime: x => parseFloat(x.trim().replace(',', '.')),//2022
+					RapportInscrit: x => parseFloat(x.trim().replace(',', '.'))
 				}
 			}
 		)
