@@ -24,13 +24,6 @@ const opts = view(
 ## circonscriptions où le/la candidate a été élu·es dès le premier tour
 
 ```js
-const t1_direct = (
-	resultats_t1
-	.filter(d => d[1].map(c => c.Elu).includes("OUI"))
-)
-
-// display(t1_direct)
-
 familles.forEach(f => {
 	const t1 = (
 		t1_direct
@@ -61,23 +54,9 @@ C'est important mais on peut mettre ce détail de côté pour l'instant.
 <div>
 
 ```js
-const qualif_t1 = (
-	resultats_t1
-	.filter(d=>!d[1].map(c=>c.Elu).includes('OUI'))
-)
-
-//display(qualif_t1.length + t1_direct.length)
-//display(qualif_t1)
-```
-
-```js
-const t1_rnpos1_not =  (
-	qualif_t1
-	.filter(d => !ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
-)
-
 //display(t1_rnpos1_not)
 
+// const display_familles = (circonsrciptions) => {
 familles.forEach(f => {
 	const t1 = (
 		t1_rnpos1_not
@@ -92,35 +71,15 @@ familles.forEach(f => {
 		display(h)
 	}
 })
+// }
+
+//display_familles(t1_rnpos1_not)
 ```
 
 </div>
 </div>
 
 ## circonscriptions où le RN et ses alliés est en tête
-
-```js
-const t1_rnpos1 = (
-	qualif_t1
-	.filter(d => ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
-)
-
-// display(t1_rnpos1)
-
-familles.forEach(f => {
-	const t1 = (
-		t1_rnpos1
-		.filter(d => {
-			const candidats = d[1] //d3.sort(d[1], d=> d.NbVoix).reverse()
-			return candidats[0].CodNuaCand == f
-		})
-	)
-	
-	if (t1.length > 0){
-		const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
-		display(h)
-	}})
-```
 
 <div class="grid grid-cols-2">
 <div>
@@ -142,6 +101,7 @@ const t1_rnpos1_sup = (
 )
 ```
 
+
 ```js
 familles.forEach(f => {
 	const t1 = t1_rnpos1_sup.filter(d => {
@@ -149,10 +109,13 @@ familles.forEach(f => {
 		return candidats[0].CodNuaCand == f
 	})
 	
-	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,0)}</td></tr>`
-	
-	display(h)
+	if (t1.length > 0){
+		const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1)}</td></tr>`
+		display(h)
+	}
 })
+
+//display_familles(t1_rnpos1_sup)
 ```
 </div>
 <div>
@@ -435,16 +398,76 @@ Plot.plot({
 })
 ```
 
+```js
+const sims2 = (
+	d3
+	.merge(
+		d3
+		.range(0, 1.1, 0.1)
+		.map(d=> sim2(d))
+	)
+	.filter(d => familles.includes(d.nuance))
+)
+```
+
+```js
+Plot.plot({
+	// marginRight: 40,
+	x: {
+		label: 'pourcentage de reports de voix',
+		//percent: true,
+		tickFormat: x => `${parseInt(x*100)} %`
+	},
+	y: {
+		label: 'sièges',
+		//nice: true,
+		domain: [0, 577]
+	},
+	color: {
+		domain: Object.keys(lg.nuances_colors),
+		range: Object.values(lg.nuances_colors)
+	},
+	marks: [
+		Plot.barY(
+			sims2,
+			Plot.stackY({
+					x: 'pct',
+					y: 'sieges',
+					order: d => familles.indexOf(d.nuance),
+					fill: 'nuance'
+			})
+		),
+		Plot.textY(
+			sims2,
+			Plot.stackY({
+					text: d => (d.sieges > 38) ? `${d.nuance}\n${d.sieges}` : undefined,
+					x: 'pct',
+					y: 'sieges',
+					order: d => familles.indexOf(d.nuance),
+					fill: d => (d.nuance != "ENS") ? 'white': 'black'
+			})
+		),
+		Plot.ruleY(
+			[289],
+			{
+				stroke: 'white',
+				strokeDasharray: [3,1],
+			}
+		)
+	]
+})
+```
+
 ## données
 
 WIP
 
-```js
-const familles = [ 'UG', 'ENS', 'LR', 'RN', 'UXD' ]
+```js echo
+const familles = [ 'UG', 'ENS', 'LR', 'UXD', 'RN' ]
 const ED = ['RN', 'UXD']
 ```
 
-```js
+```js echo
 const resultats_t1 = (
 	d3
 	.rollups(
@@ -455,12 +478,40 @@ const resultats_t1 = (
 )
 ```
 
+```js echo
+const t1_direct = (
+	resultats_t1
+	.filter(d => d[1].map(c => c.Elu).includes("OUI"))
+)
+```
+
+```js
+const qualif_t1 = (
+	resultats_t1
+	.filter(d=>!d[1].map(c=>c.Elu).includes('OUI'))
+)
+```
+
+```js echo
+const t1_rnpos1 = (
+	qualif_t1
+	.filter(d => ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
+)
+```
+
+```js echo
+const t1_rnpos1_not =  (
+	qualif_t1
+	.filter(d => !ED.includes(d3.greatest(d[1], d=> d.NbVoix).CodNuaCand))
+)
+```
+
 ## fonctions
 
 WIP
 
-```js
-const to_data = (candidats) => {
+```js echo
+function to_data(candidats){
 	return d3.sort(candidats,d=>d.NbVoix).reverse().map(d => ({
 		party: d.CodNuaCand,
 		voices: d.NbVoix,
@@ -469,7 +520,7 @@ const to_data = (candidats) => {
 }
 ```
 
-```js
+```js echo
 function cg_list(l, pos=0, disp=undefined){
 	const data = (d) => (opts.includes('circogramme'))? to_data(d[1]).slice(0,(disp)?disp:l.length) : [to_data(d[1])[pos]]
 
