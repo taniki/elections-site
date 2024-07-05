@@ -158,6 +158,10 @@ familles.filter(f => !ED.includes(f)).forEach(f => {
 
 ## version interactive
 
+<div class="grid grid-cols-2">
+
+<div>
+
 Une simulation relativement claquée de ce qui se passerait pour les circonscriptions où le RN est en tête et qu'un certain pourcentage (`pct_report`) des votes de la personne en troisième position se reportait sur la seconde.
 
 ```js
@@ -196,6 +200,9 @@ const sim = (t1, pct) => (
 
 const t2_sim = sim(t1_rnpos1, pct_report)
 ```
+
+</div>
+<div>
 
 ### composition finale
 
@@ -261,6 +268,8 @@ familles.forEach(f => {
 })
 ```
 
+<details>
+
 ### effet sur les circonscriptions où l'extrême-droite est en tête
 
 ```js
@@ -279,7 +288,14 @@ familles.forEach(f => {
 })
 ```
 
+</details>
+</div>
+</div>
+
 ## évolution du nombre de sièges en fonction des reports de voix
+
+<div class="grid grid-cols-2">
+<div>
 
 ```js
 const sim2 = (pct)=>{
@@ -406,6 +422,9 @@ const sims2 = (
 		.range(0, 1.1, 0.1)
 		.map(d=> sim2(d))
 	)
+	// .forEach(d=>{
+	// 	//d['nuance'] = (familles.includes(d.nuance)) ? d.nuance : 'Autres'
+	// })
 	.filter(d => familles.includes(d.nuance))
 )
 ```
@@ -453,10 +472,28 @@ Plot.plot({
 				stroke: 'white',
 				strokeDasharray: [3,1],
 			}
+		),
+		Plot.text(
+			['50 %'],
+			{
+				text: d=>d,
+				x: 1,
+				y: 289,
+				textAnchor: 'start',
+				dx: 32
+			}
 		)
 	]
 })
 ```
+
+</div>
+<div>
+
+
+
+</div>
+</div>
 
 ## données
 
