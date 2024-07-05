@@ -316,6 +316,110 @@ familles.forEach(f => {
 })
 ```
 
+## évolution du nombre de sièges en fonction des reports de voix
+
+```js
+const sim2 = (pct)=>{
+	const composition = (
+		d3
+		.merge([
+			t1_direct,
+			qualif_t1
+				.filter(d => !ED.includes(d3.greatest(d[1], c => c.NbVoix).CodNuaCand)),
+			sim(t1_rnpos1, pct)
+		])
+	)
+	
+	const winners = (
+		d3
+		.rollups(
+			composition
+			.map(d=>winner(d[1]).CodNuaCand),
+			d => d.length,
+			d => d
+		)
+	)
+	
+	return winners.map(w => ({nuance: w[0], sieges: w[1], pct}))
+}
+
+const sims = (
+	d3
+	.group(
+		d3
+		.merge(
+			d3
+			.range(0, 1, 0.01)
+			.map(d=> sim2(d))
+		),
+		d=> d.nuance
+	)
+)
+```
+
+```js
+Plot.plot({
+	x: {
+		label: 'pourcentage de reports de voix',
+		percent: true,
+		tickFormat: x => `${x} %`
+	},
+	y: {
+		label: 'sièges',
+		nice: true
+	},
+	color: {
+		domain: Object.keys(lg.nuances_colors),
+		range: Object.values(lg.nuances_colors)
+	},
+	marks: [
+		...(
+			familles.map(f => {
+				return Plot.line(
+					sims.get(f),
+					{
+						x: 'pct',
+						y: 'sieges',
+						stroke: 'nuance'
+					}
+				)
+			})
+		),
+		Plot.ruleX(
+			[0.36],
+			{
+				strokeDasharray: [3,1],
+				stroke: '#aaa'
+			}
+		),
+		Plot.text(
+			['point de bascule où le RN n\'est plus majoritaire'],
+			{
+				y: 300,
+				x: 0.36,
+				dy: -8
+			}
+		),
+		Plot.ruleY(
+			[289],
+			{
+				strokeDasharray: [3,1],
+				stroke: '#aaa'
+			}
+		),
+		Plot.text(
+			['majorité absolue'],
+			{
+				y: 289,
+				x: 1,
+				dy: -8,
+				textAnchor: 'end'
+			}
+		),
+	]
+})
+```
+
 ## données
 
 WIP
