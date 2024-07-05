@@ -234,22 +234,6 @@ const sim = (t1, pct) => (
 const t2_sim = sim(t1_rnpos1, pct_report)
 ```
 
-```js
-familles.forEach(f => {
-	const t1 = (
-		t2_sim
-		.filter(d => {
-			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
-			return candidats[0].CodNuaCand == f
-		})
-	)
-	
-	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,0,3)}</td></tr>`
-	
-	display(h)
-})
-```
-
 ### composition finale
 
 ```js
@@ -302,6 +286,24 @@ ${message}
 familles.forEach(f => {
 	const t1 = (
 		composition_sim
+		.filter(d => {
+			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
+			return candidats[0].CodNuaCand == f
+		})
+	)
+	
+	const h = html`<tr><td>${f} (${t1.length})</td><td>${cg_list(t1,0,3)}</td></tr>`
+	
+	display(h)
+})
+```
+
+### effet sur les circonscriptions où l'extrême-droite est en tête
+
+```js
+familles.forEach(f => {
+	const t1 = (
+		t2_sim
 		.filter(d => {
 			const candidats = d3.sort(d[1], d=> d.NbVoix).reverse()
 			return candidats[0].CodNuaCand == f
