@@ -5,7 +5,7 @@ export const nuances_colors = {
 	UG  : '#e4032e',
 	ENS : '#fed700',
 	LR  : '#0066cc',
-	UXD : '#5e3b17',
+	UXD : '#945e32',
 	RN  : '#5e3b17',
 }
 
