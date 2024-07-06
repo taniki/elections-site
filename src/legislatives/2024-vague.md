@@ -22,6 +22,7 @@ La marge permet d'avoir une approximation de la solidité du vote d'un·e déput
 Pourquoi pas juste l'écart entre la première position et la seconde ?
 Parce que la personne élue peut avoir été seconde puis avoir profiter d'un report de voix favorable.
 Sa marge est alors négative.
+On peut interpréter cela comme une fragilité locale de l'élection.
 
 
 <div class="caution">
@@ -57,6 +58,7 @@ Plot.legend({
 
 ```js echo
 Plot.plot({
+  width,
   aspectRatio: 1,
   x: {
 	  label: "marge",
@@ -73,32 +75,77 @@ Plot.plot({
   },
   marks: [
 	Plot.dot(
-	  lg2022_margins,
+	  changes_2022_2024,
 	  Plot.stackY2({
-		x: d => d[1].margin,
+		x: d => parseInt(d.lg2022.margin),
 		y: 1,
-		fy: d => d[1].winner.group,
-		href: d => `/legislatives/circonscription#${d[0]}`,
+		fy: d => d.lg2022.winner.group,
+		href: d => `/legislatives/circonscription#${d.circonscription}`,
 		symbol: 'square',
 		order: d => {
-			const lg2024_winner =lg2024_winners.get(d[1].winner.CodCirc2).winner
-			const sameGroup = d[1].winner.group != lg2024_winner.group
-			
-			const o = (lg2024_winner.group in group_colors) ? Object.keys(group_colors).indexOf(lg2024_winner.group) : 100
+			const o = (d.lg2024.winner.group in group_colors) ? Object.keys(group_colors).indexOf(d.lg2024.winner.group) : 100
 
-			return (sameGroup) ? o : 1000
+			return (d.change) ? o : 1000
 		},
-		fill: d => {
-			const lg2024_winner =lg2024_winners.get(d[1].winner.CodCirc2).winner
-			const sameGroup = d[1].winner.group != lg2024_winner.group
-			
-			return (sameGroup) ? ((lg2024_winner.group in group_colors) ? group_colors[lg2024_winners.get(d[1].winner.CodCirc2).winner.group] : '#666') : '#bbb'
+		fill: d => {			
+			return (d.change) ? ((d.lg2024.winner.group in group_colors) ? group_colors[d.lg2024.winner.group] : '#666') : '#bbb'
 		}
 	  })
 	),
 	Plot.ruleY([0]),
 	Plot.axisX({ facetAnchor: null, tickFormat: d => `${d} %` })
   ]
+})
+```
+
+## variation en scatterplot
+
+L'idée était de voir s'il était facile d'avoir une représentation avec des cercles.
+Dans Observable Plot, il n'y a pas de façon simble de les disperser pour éviter les superpositions.
+C'est donc pas très utilisable ou lisible mais peut servir de base pour d'autres explorations.
+En utilisant d3 par exemple.
+
+Il y a petit côté [Hans Rosling](https://www.gapminder.org/) intéressant.
+
+```js
+Plot.plot({
+	width,
+	aspectRatio: 1,
+    x: {
+		label: "marge en 2022",
+		tickFormat: d => `${d} %`,
+		grid: true,
+	},
+	y: {
+		label: "marge en 2024",
+	  	tickFormat: d => `${d} %`,
+	  	grid: true,
+	},
+    fy:{
+		  domain: ['NFP', 'ENS', 'LR', 'RN']
+	},
+	marks: [
+		Plot.dot(
+			changes_2022_2024,
+			{
+				href: d => `/legislatives/circonscription#${d.circonscription}`,
+				x: d => d.lg2022.margin,
+				y: d => d.lg2024.margin,
+				r: 8,
+				fy: d => d.lg2022.winner.group,
+				opacity: 0.8,
+				fill: d => {			
+					return (d.change) ? ((d.lg2024.winner.group in group_colors) ? group_colors[d.lg2024.winner.group] : '#666') : '#bbb'
+				},
+				stroke: 'white',
+				sort: d => {
+					const o = (d.lg2024.winner.group in group_colors) ? Object.keys(group_colors).indexOf(d.lg2024.winner.group) : 100
+				
+					return (d.change) ? -o : -1000
+				},
+			}
+		)
+	]
 })
 ```
 
@@ -109,8 +156,14 @@ import * as lg from '../components/legislatives.js'
 ```
 
 ```js echo
-const lg2022_t1 = (await lg.fetch_votes(2022, 1)).objects()
-const lg2022_t2 = (await lg.fetch_votes(2022, 2)).objects()
+const lg2022_t1 = (await lg.fetch_votes(2022, 1)).rename({
+	RapportExprime: 'RapportExprimes',
+	RapportInscrit: 'RapportInscrits'
+}).objects()
+const lg2022_t2 = (await lg.fetch_votes(2022, 2)).rename({
+	RapportExprime: 'RapportExprimes',
+	RapportInscrit: 'RapportInscrits'
+}).objects()
 const lg2024_t1 = (await lg.fetch_votes(2024, 1)).objects()
 ```
 
@@ -131,7 +184,7 @@ const lg2022_margins = (
 	d3
 	.rollups(
 		lg2022_t1,
-		margin,
+		d => margin(d, lg2022_t2),
 		d => d.CodCirc2
 	)
 )
@@ -161,12 +214,33 @@ const lg2024_winners = (
 // display([...lg2024_winners.keys()])
 ```
 
+```js echo
+const changes_2022_2024 = (
+	lg2022_margins
+	.map(d => {
+		const lg2024 = structuredClone(lg2024_winners).get(d[0])
+		const change = d[1].winner.group != lg2024.winner.group
+		
+		lg2024.margin = margin(lg2024_t1.filter(c => c.CodCirc2 == d[0]), lg2024_t1).margin
+		
+		return {
+			circonscription: d[0],
+			lg2022: d[1],
+			lg2024,
+			change
+		}
+	})
+)
+
+display(changes_2022_2024)
+```
+
 ## fonctions
 
 ### calcul de la marge
 
 ```js echo
-const margin = (data) => {
+const margin = (data, t2) => {
 	const circonscription_code = data.CodCirc2
 
 	const candidats = d3.sort(structuredClone(data), d => d.NbVoix).reverse()
@@ -177,13 +251,17 @@ const margin = (data) => {
 		winner = candidats.find(d => d.Elu == "oui")
 	} else {
 		const winner_t2 = (
-			lg2022_t2.find(d => (d.CodCirc2 == candidats[0].CodCirc2) && (d.Elu == "oui"))
+			//t2.find(d => (d.CodCirc2 == candidats[0].CodCirc2) && (d.Elu == "oui"))
+			d3.greatest(
+				t2.filter(d => d.CodCirc2 == candidats[0].CodCirc2),
+				d => d.NbVoix
+			)
 		)
 		
 		winner = candidats.find(d => d.NumPanneauCand == winner_t2.NumPanneauCand)
 		winner['group'] = (winner.CodNua in groups)? groups[winner.CodNua] : winner.CodNua
 
-		margin = parseInt(winner.RapportExprime - d3.greatest(candidats.filter(d=>d.NumPanneauCand != winner.NumPanneauCand)).RapportExprime)
+		margin = winner.RapportExprimes - d3.greatest(candidats.filter(d=>d.NumPanneauCand != winner.NumPanneauCand)).RapportExprimes
 	}
 
 	return {
