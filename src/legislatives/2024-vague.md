@@ -92,6 +92,71 @@ Plot.plot({
 })
 ```
 
+<details>
+
+```js
+Plot.legend({
+	type: 'categorical',
+	color:{
+		domain: [
+			"circonscription ne changeant pas de nuance",
+			"circonscription passant au NFP",
+			"circonscription passant à Ensemble",
+			"circonscription passant à Les Républicains",
+			"circonscription passant à LR-RN",
+			"circonscription passant au Rassemblement nationale",
+		],
+		range: [
+			'#bbb',
+			lg.nuances_colors['NFP'],
+			lg.nuances_colors['ENS'],
+			lg.nuances_colors['LR'],
+			lg.nuances_colors['UXD'],
+			lg.nuances_colors['RN'],
+		]
+	}
+})
+```
+
+```js echo
+Plot.plot({
+  width,
+  aspectRatio: 1,
+  x: {
+	  label: "marge",
+	  //tickFormat: d => `${d} %`
+  },
+  y: {
+	axis: false,
+	reverse: true
+  },
+  fy:{
+	  domain: ['NFP', 'ENS', 'LR', 'RN']
+  },
+  color: {
+	  legend:true
+  },
+  marks: [
+	Plot.cell(
+	  changes_2022_2024,
+	  Plot.stackY2({
+		x: d => parseInt(d.lg2022.margin),
+		y: 1,
+		fy: d => d.lg2022.winner.group,
+		href: d => `/legislatives/circonscription#${d.circonscription}`,
+		symbol: 'square',
+		order : d => order(d),
+		fill,
+	  })
+	),
+	Plot.ruleY([0]),
+	Plot.axisX({ facetAnchor: null, })
+  ]
+})
+```
+
+</details>
+
 ## variation en scatterplot
 
 L'idée était de voir s'il était facile d'avoir une représentation avec des cercles.
@@ -132,7 +197,8 @@ Plot.plot({
 				stroke: 'white',
 				sort: d => order(d, -1),
 			}
-		)
+		),
+		Plot.axisX({ facetAnchor: null, tickFormat: d => `${d} %` })
 	]
 })
 ```
