@@ -82,14 +82,8 @@ Plot.plot({
 		fy: d => d.lg2022.winner.group,
 		href: d => `/legislatives/circonscription#${d.circonscription}`,
 		symbol: 'square',
-		order: d => {
-			const o = (d.lg2024.winner.group in group_colors) ? Object.keys(group_colors).indexOf(d.lg2024.winner.group) : 100
-
-			return (d.change) ? o : 1000
-		},
-		fill: d => {			
-			return (d.change) ? ((d.lg2024.winner.group in group_colors) ? group_colors[d.lg2024.winner.group] : '#666') : '#bbb'
-		}
+		order : d => order(d),
+		fill,
 	  })
 	),
 	Plot.ruleY([0]),
@@ -134,15 +128,9 @@ Plot.plot({
 				r: 8,
 				fy: d => d.lg2022.winner.group,
 				opacity: 0.8,
-				fill: d => {			
-					return (d.change) ? ((d.lg2024.winner.group in group_colors) ? group_colors[d.lg2024.winner.group] : '#666') : '#bbb'
-				},
+				fill,
 				stroke: 'white',
-				sort: d => {
-					const o = (d.lg2024.winner.group in group_colors) ? Object.keys(group_colors).indexOf(d.lg2024.winner.group) : 100
-				
-					return (d.change) ? -o : -1000
-				},
+				sort: d => order(d, -1),
 			}
 		)
 	]
@@ -236,6 +224,26 @@ display(changes_2022_2024)
 ```
 
 ## fonctions
+
+```js
+const order = (d, reverse=1) => (
+	d.change
+		? d.lg2024.winner.group in group_colors
+			? reverse * Object.keys(group_colors).indexOf(d.lg2024.winner.group)
+			: reverse * 100
+		: reverse * 1000
+)
+```
+
+```js
+const fill = (d) => (
+	d.change
+		? d.lg2024.winner.group in group_colors
+			? group_colors[d.lg2024.winner.group]
+			: '#666'
+		: '#bbb'
+)
+```
 
 ### calcul de la marge
 
