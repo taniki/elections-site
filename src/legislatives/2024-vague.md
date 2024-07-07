@@ -2,7 +2,7 @@
 title: la vague
 ---
 
-# la vague brune
+# la vague
 ## visualiser la résilience des sortant·es
 
 ## inspiration
