@@ -25,13 +25,6 @@ Sa marge est alors négative.
 On peut interpréter cela comme une fragilité locale de l'élection.
 
 
-<div class="caution">
-
-Cette visualisation utilise pour l'instant les résultats du premier tour des législatives de 2022 mais le but c'est d'utiliser les résultats du second tour.
-
-</div>
-
-
 ```js
 Plot.legend({
 	type: 'categorical',
@@ -79,6 +72,7 @@ Plot.plot({
 	  Plot.stackY2({
 		x: d => parseInt(d.lg2022.margin),
 		y: 1,
+		r: 5,
 		fy: d => d.lg2022.winner.group,
 		href: d => `/legislatives/circonscription#${d.circonscription}`,
 		symbol: 'square',
@@ -219,6 +213,7 @@ const lg2022_t2 = (await lg.fetch_votes(2022, 2)).rename({
 	RapportInscrit: 'RapportInscrits'
 }).objects()
 const lg2024_t1 = (await lg.fetch_votes(2024, 1)).objects()
+const lg2024_t2 = (await lg.fetch_votes(2024, 2)).objects()
 ```
 
 ```js echo
@@ -250,14 +245,18 @@ const lg2022_margins = (
 const lg2024_winners = (
 	d3
 	.rollup(
-		lg2024_t1,
+		lg2024_t2,
 		d => {
 			let winner = d3.greatest(structuredClone(d), d=>d.NbVoix)
 			
-			winner.group = (winner.CodNuaCand in groups) ? groups[winner.CodNuaCand] : winner.CodNuaCand
+			if (winner != undefined){
+				winner.group = (winner.CodNuaCand in groups)
+					? groups[winner.CodNuaCand]
+					: winner.CodNuaCand
+			}
 			
 			return {
-				winner
+				winner: winner
 			}
 		},
 		d => d.CodCirc2
@@ -273,14 +272,17 @@ const changes_2022_2024 = (
 	lg2022_margins
 	.map(d => {
 		const lg2024 = structuredClone(lg2024_winners).get(d[0])
-		const change = d[1].winner.group != lg2024.winner.group
+		let change = false
 		
-		lg2024.margin = margin(lg2024_t1.filter(c => c.CodCirc2 == d[0]), lg2024_t1).margin
-		
+		if (lg2024 != undefined){
+			if (lg2024.winner != undefined) change = d[1].winner.group != lg2024.winner.group
+			//ICIlg2024.margin = margin(lg2024_t2.filter(c => c.CodCirc2 == d[0]), lg2024_t1).margin
+		}
+			
 		return {
 			circonscription: d[0],
 			lg2022: d[1],
-			lg2024,
+			lg2024: lg2024,
 			change
 		}
 	})
