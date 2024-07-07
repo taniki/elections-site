@@ -14,7 +14,7 @@ export function fetch_votes(annee, tour){
 	return (
 		aq
 		.loadCSV(
-			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}_t${tour}_resultats.csv`,
+			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}/t${tour}_resultats.csv`,
 			{
 				autoType:false,
 				parse:{
@@ -33,7 +33,7 @@ export function fetch_candidats(annee, tour){
 	return (
 		aq
 		.loadCSV(
-			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}_t${tour}_candidats.csv`,
+			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}/t${tour}_candidats.csv`,
 			{
 				autoType:false,
 				parse:{
