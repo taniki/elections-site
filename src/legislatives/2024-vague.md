@@ -256,7 +256,7 @@ const lg2024_winners = (
 			}
 			
 			return {
-				winner: winner
+				winner
 			}
 		},
 		d => d.CodCirc2
@@ -276,13 +276,13 @@ const changes_2022_2024 = (
 		
 		if (lg2024 != undefined){
 			if (lg2024.winner != undefined) change = d[1].winner.group != lg2024.winner.group
-			//ICIlg2024.margin = margin(lg2024_t2.filter(c => c.CodCirc2 == d[0]), lg2024_t1).margin
+			lg2024.margin = margin(lg2024_t1.filter(c => c.CodCirc2 == d[0]), lg2024_t2).margin
 		}
 			
 		return {
 			circonscription: d[0],
 			lg2022: d[1],
-			lg2024: lg2024,
+			lg2024,
 			change
 		}
 	})
@@ -335,10 +335,11 @@ const margin = (data, t2) => {
 		)
 		
 		winner = candidats.find(d => d.NumPanneauCand == winner_t2.NumPanneauCand)
-		winner['group'] = (winner.CodNua in groups)? groups[winner.CodNua] : winner.CodNua
-
-		margin = winner.RapportExprimes - d3.greatest(candidats.filter(d=>d.NumPanneauCand != winner.NumPanneauCand)).RapportExprimes
 	}
+
+	winner.group = (winner.CodNua in groups)? groups[winner.CodNua] : winner.CodNua
+	margin = winner.RapportExprimes - d3.greatest(candidats.filter(d=>d.NumPanneauCand != winner.NumPanneauCand)).RapportExprimes
+
 
 	return {
 		winner,
