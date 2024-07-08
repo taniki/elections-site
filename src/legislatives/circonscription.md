@@ -33,6 +33,12 @@ const resultats_2024_t1 = (
 	.filter(aq.escape(d=> d.CodCirc2 == code_circo))
 )
 
+const resultats_2024_t2 = (
+	(await lg.fetch_votes(2024, 2))
+	.filter(aq.escape(d=> d.CodCirc2 == code_circo))
+	.objects()
+)
+
 const CodReg = resultats_2024_t1.get('CodReg')
 const CodDpt = resultats_2024_t1.get('CodDept')
 const CodCirc = resultats_2024_t1.get('CodCirc')
@@ -107,6 +113,16 @@ const voix_plot = (resultats) => {
 }
 
 display(voix_plot((resultats_2024_t1).objects()))
+```
+
+### second tour
+
+```js
+Inputs.table(resultats_2024_t2)
+```
+
+```js
+voix_plot(resultats_2024_t2)
 ```
 
 ## 2022
