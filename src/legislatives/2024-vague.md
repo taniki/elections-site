@@ -85,8 +85,48 @@ Plot.plot({
   ]
 })
 ```
+## toutes les circonscriptions
+
+```js
+Plot.plot({
+  width,
+  aspectRatio: 1,
+  x: {
+	  label: "marge",
+	  tickFormat: d => `${d} %`
+  },
+  y: {
+	grid: true,
+  },
+  fy:{
+	  domain: ['NFP', 'ENS', 'LR', 'RN']
+  },
+  color: {
+	  legend:true
+  },
+  marks: [
+	Plot.dot(
+	  changes_2022_2024,
+	  Plot.stackY2({
+		x: d => parseInt(d.lg2022.margin),
+		y: 1,
+		r: 5,
+		href: d => `/legislatives/circonscription#${d.circonscription}`,
+		symbol: 'square',
+		order : d => order(d),
+		fill,
+	  })
+	),
+	Plot.ruleY([0]),
+	Plot.axisX({ facetAnchor: null, tickFormat: d => `${d} %` })
+  ]
+})
+```
+
 
 <details>
+
+Tentative avec `Plot.cell()` pas encore satisfaisante.
 
 ```js
 Plot.legend({
