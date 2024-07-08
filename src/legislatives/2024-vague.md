@@ -191,7 +191,9 @@ Plot.plot({
 
 </details>
 
-## variation en scatterplot
+## variation
+
+### scatterplot
 
 L'idée était de voir s'il était facile d'avoir une représentation avec des cercles.
 Dans Observable Plot, il n'y a pas de façon simble de les disperser pour éviter les superpositions.
@@ -236,6 +238,55 @@ Plot.plot({
 	]
 })
 ```
+
+### Beeswarm
+
+```js echo
+Plot.plot({
+	width,
+	aspectRatio: '0.5',
+	x: {
+		label: "marge en 2022",
+		tickFormat: d => `${d} %`,
+		grid: true,
+	},
+	y: {
+		//label: "marge en 2024",
+	  	//tickFormat: d => `${d} %`,
+		axis: false,
+	  	//grid: true,
+		domain: [-5,5]
+	},
+	fy:{
+		domain: ['NFP', 'ENS', 'LR', 'RN']
+	},
+	r:{
+		//range: [2, 16]
+	},
+	marks: [
+		Plot.dot(
+			changes_2022_2024.filter(d => d.lg2024 != undefined),
+			Plot.dodgeY(
+				"middle",
+				{
+					href: d => `/legislatives/circonscription#${d.circonscription}`,
+					x: d => d.lg2022.margin,
+					//y: d => d.lg2024.margin,
+					r: d => d.lg2024.winner.NbVoix,
+					fy: d => d.lg2022.winner.group,
+					opacity: 0.8,
+					fill,
+					stroke: 'white',
+					sort: d => order(d, 1),
+				}
+			)
+		),
+		Plot.axisX({ facetAnchor: null, tickFormat: d => `${d} %` })
+	]
+})
+```
+
+
 
 ## données
 
@@ -285,7 +336,14 @@ const lg2022_margins = (
 const lg2024_winners = (
 	d3
 	.rollup(
-		lg2024_t2,
+		d3.merge([
+			lg2024_t1
+			.filter(d => lg2024_t1
+				.filter(d2 => d2.CodCirc2 == d.CodCirc2)
+				.some(d2=> d2.Elu == "OUI")
+			),
+			lg2024_t2,
+		]),
 		d => {
 			let winner = d3.greatest(structuredClone(d), d=>d.NbVoix)
 			
@@ -363,8 +421,8 @@ const margin = (data, t2) => {
 	let winner = undefined
 	let margin = undefined
 
-	if (candidats.map(d=>d.Elu).includes('oui')){
-		winner = candidats.find(d => d.Elu == "oui")
+	if (candidats.map(d=>d.Elu.toLowerCase()).includes('oui')){
+		winner = candidats.find(d => d.Elu.toLowerCase() == "oui")
 	} else {
 		const winner_t2 = (
 			//t2.find(d => (d.CodCirc2 == candidats[0].CodCirc2) && (d.Elu == "oui"))
