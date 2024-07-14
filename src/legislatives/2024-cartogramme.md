@@ -101,48 +101,49 @@ const plot_departements = () => {
 		.attr('dy', -5)
 		.text(d => d.LibDpt)
 		
-	departements
-		.append(d => {
-			const departement_resultat = (
-				resultats
-				.filter(c => c[0].slice(0, 2) == d.CodDpt)
-			)
-
-			//display(departement_resultat)
-
-			const g = d3
-				.create('g')
-			
-			// const circoncriptions = g
-			// 	.selectAll('.circonscription')
-			// 	.data(departement_resultat)
-			// 	.enter()
-			// 		.append('g')
-			// 		.attr('class', 'circonscription')
-			// 		.attr('id', c => `circonscription-${c[0]}`)
-			// 		.append('rect')
-			// 			.attr('fill', 'red')
-			// 			.attr('width', square_size)
-			// 			.attr('height', square_size)
-			// 			.attr('x', c => d.x * square_size)
-			// 			.attr('y', c => d.y * square_size)
-						
-					// .append((c,i) => {
-					// 	const x = ((i % d.w) + d.x) * square_size
-					// 	const y = (d.y + Math.floor(i/d.w)) * square_size
-					// 	
-					// 	return (
-					// 		circogramme(c[1], square_size, square_size)
-					// 			.attr('width', square_size)
-					// 			.attr('height', square_size)
-					// 			.attr('x', x)
-					// 			.attr('y', y)
-					// 			.node()
-					// 	)
-					// })
-			//display(g)
-			return g.node()
-		})
+// 	departements
+// 		.append(d => {
+// 			const departement_resultat = (
+// 				resultats
+// 				.filter(c => c[0].slice(0, 2) == d.CodDpt)
+// 			)
+// 
+// 			//display(departement_resultat)
+// 
+// 			const g = d3
+// 				.create('g')
+// 			
+// 			const circoncriptions = g
+// 				.selectAll('.circonscription')
+// 				.data(departement_resultat)
+// 				.enter()
+// 					.append('g')
+// 					.attr('class', 'circonscription')
+// 					.attr('id', c => `circonscription-${c[0]}`)
+// 					.append('rect')
+// 						.attr('fill', 'red')
+// 						.attr('width', square_size)
+// 						.attr('height', square_size)
+// 						// .attr('x', c => d.x * square_size)
+// 						// .attr('y', c => d.y * square_size)
+// 						
+// 					.append((c,i) => {
+// 						const x = ((i % d.w) + d.x) * square_size
+// 						const y = (d.y + Math.floor(i/d.w)) * square_size
+// 						
+// 						return (
+// 							circogramme(c[1], square_size, square_size)
+// 								.attr('width', square_size)
+// 								.attr('height', square_size)
+// 								.attr('transform', `translate(${x} ${y})`)
+// 								// .attr('x', x)
+// 								// .attr('y', y)
+// 								.node()
+// 						)
+// 					})
+// 			//display(g)
+// 			return g.node()
+// 		})
 }
 
 plot_fond()
