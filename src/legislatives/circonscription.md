@@ -22,7 +22,9 @@ const candidats = candidats_france.filter(circo => circo.CodCirc2 == code_circo)
 ### liste des candidats
 
 ```js
-Inputs.table(candidats)
+Inputs.table(candidats,{
+		columns: ['NumPanneauCand', 'CivilitePsn', 'PrenomPsn', 'NomPsn', 'LibNuaCand'],
+	})
 ```
 
 ### premier tour
@@ -52,7 +54,15 @@ ${html`<a href="${t1_resultats_url}">Résultats officiels</a>`}
 
 
 ```js
-Inputs.table(resultats_2024_t1)
+Inputs.table(resultats_2024_t1, {
+	columns: ['CivilitePsn', 'PrenomPsn', 'NomPsn', 'LibNuaCand', 'NbVoix', 'RapportExprimes'],
+	format: {
+		'NbVoix': d=> d.toLocaleString('fr'),
+		'RapportExprimes': d=> `${d.toLocaleString('fr')} %`,
+	},
+	sort: 'NbVoix',
+	reverse: true
+})
 ```
 
 ```js
@@ -129,7 +139,15 @@ display(voix_plot((resultats_2024_t1).objects(), lg.nuances_colors_2024))
 ### second tour
 
 ```js
-Inputs.table(resultats_2024_t2)
+Inputs.table(resultats_2024_t2, {
+	columns: ['CivilitePsn', 'PrenomPsn', 'NomPsn', 'LibNuaCand', 'NbVoix', 'RapportExprimes'],
+	format: {
+		'NbVoix': d=> d.toLocaleString('fr'),
+		'RapportExprimes': d=> `${d.toLocaleString('fr')} %`,
+	},
+	sort: 'NbVoix',
+	reverse: true
+})
 ```
 
 ```js
