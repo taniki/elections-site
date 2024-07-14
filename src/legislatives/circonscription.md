@@ -122,10 +122,14 @@ const voix_plot = (resultats, couleurs, voix_t1) => {
 				dy: -16
 			}) : undefined,
 			(voix_t1) ? Plot.tickX(
-				voix_t1, {
+				voix_t1
+				.filter(d => resultats.map(d2 => d2.NomPsn).includes(d[0])),
+				{
 					x: d => d[1],
 					y: d => d[0],
-					stroke: d => (resultats.find(d2 => d2.NomPsn == d[0]).NbVoix > d[1]) ? 'white' : 'black',
+					stroke: d => (resultats.find(d2 => d2.NomPsn == d[0]).NbVoix > d[1])
+						? 'white'
+						: 'black',
 					strokeDasharray: [2,1]
 				}
 			) : undefined
