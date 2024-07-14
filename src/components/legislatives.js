@@ -1,18 +1,19 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as aq from "npm:arquero";
 
-export const nuances_colors = {
+export const nuances_colors_2024 = {
 	UG  : '#e4032e',
 	NFP : '#e4032e',
 	ENS : '#fed700',
 	LR  : '#0066cc',
 	UXD : '#945e32',
 	RN  : '#5e3b17',
+	DEF : '#aaa'
 }
 
-export function fetch_votes(annee, tour){
+export async function fetch_votes(annee, tour){
 	return (
-		aq
+		await aq
 		.loadCSV(
 			`https://raw.githubusercontent.com/taniki/legislatives-2024/main/lg${annee}/t${tour}_resultats.csv`,
 			{
@@ -27,6 +28,7 @@ export function fetch_votes(annee, tour){
 			}
 		)
 	)
+	.derive({ tour })
 }
 
 export function fetch_candidats(annee, tour){

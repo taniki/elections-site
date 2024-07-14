@@ -56,7 +56,7 @@ Inputs.table(resultats_2024_t1)
 ```
 
 ```js
-const voix_plot = (resultats) => {
+const voix_plot = (resultats, couleurs, voix_t1) => {
 	const threshold_qualification = (
 		.125
 		* d3.max(resultats.map(d => d.NbVoix))
@@ -68,6 +68,8 @@ const voix_plot = (resultats) => {
 		* d3.max(resultats.map(d => d.NbVoix))
 		/ (d3.max(resultats.map(d => d.RapportExprimes)) / 100)
 	)
+	
+	const fill = (couleurs) ? d => couleurs[d.CodNuaCand] || couleurs['DEF'] : 'black'
 	
 	return Plot.plot({
 		marginLeft: 150,
@@ -88,17 +90,18 @@ const voix_plot = (resultats) => {
 					x: "NbVoix",
 					sort: {
 						y: "-x"
-					}
+					},
+					fill
 				}
 			),
-			Plot.ruleX(
+			(resultats[0].tour == 1) ? Plot.ruleX(
 				[
 					threshold_qualification,
 					threshold_elu
 				], {
 				strokeDasharray: [2,1]
-			}),
-			Plot.text([
+			}) : undefined,
+			(resultats[0].tour == 1) ? Plot.text([
 				['12,5 % des inscrits', threshold_qualification],
 				['50,0 % des votants', threshold_elu],
 			], {
@@ -107,12 +110,20 @@ const voix_plot = (resultats) => {
 				y: d=> d3.greatest(resultats, d=>d.NbVoix).NomPsn,
 				lineAnchor: 'bottom',
 				dy: -16
-			})
+			}) : undefined,
+			(voix_t1) ? Plot.tickX(
+				voix_t1, {
+					x: d => d[1],
+					y: d => d[0],
+					stroke: 'white',
+					strokeDasharray: [2,1]
+				}
+			) : undefined
 		]
 	})
 }
 
-display(voix_plot((resultats_2024_t1).objects()))
+display(voix_plot((resultats_2024_t1).objects(), lg.nuances_colors_2024))
 ```
 
 ### second tour
@@ -122,7 +133,14 @@ Inputs.table(resultats_2024_t2)
 ```
 
 ```js
-voix_plot(resultats_2024_t2)
+voix_plot(
+	resultats_2024_t2,
+	lg.nuances_colors_2024,
+	resultats_2024_t1
+	.objects()
+	.filter(d => d.Elu == "QUALIF T2")
+	.map(d => [ d.NomPsn, d.NbVoix ])
+)
 ```
 
 ## 2022
